@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom"; 
 import { useAuth } from "../context/AuthContext";
 
 function Login() {
@@ -48,13 +48,12 @@ function Login() {
         // Redirect based on specific role
         const roleRedirects = {
             "admin": "/dashboard/admin",
-            "Principal": "/dashboard/principal",
-            "VP Admin": "/dashboard/vp-admin",
-            "VP Academic": "/dashboard/vp-academic",
-            "Senior Master": "/dashboard/senior-master",
-            "Exam Officer": "/dashboard/exam-officer",
-            "Form Master": "/dashboard/form-master",
-            "Subject Teacher": "/dashboard/teacher"
+            "principal": "/dashboard/principal",
+            "vp_admin": "/dashboard/vp-admin",
+            "senior_master": "/dashboard/senior-master",
+            "exam_officer": "/dashboard/exam-officer",
+            "form_master": "/dashboard/form-master",
+            "teacher": "/dashboard/teacher"
         };
 
         const redirectPath = roleRedirects[existingUser.role] || "/dashboard";
@@ -63,7 +62,7 @@ function Login() {
 
     return (
         <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl">
-            <h2 className="text-2xl font-bold mb-5 text-center">Login</h2>
+            <h2 className="text-2xl font-bold mb-5 text-center">Staff Login</h2>
             <form onSubmit={handleSubmit}>
                 <input
                     type="email"
@@ -91,14 +90,8 @@ function Login() {
                 </button>
             </form>
 
-            <p className="text-center text-sm">
-                Don't have an account?{" "}
-                <Link 
-                    to="/register" 
-                    className="text-blue-500 hover:text-blue-700 font-medium"
-                >
-                    Register here
-                </Link> 
+            <p className="text-center text-sm text-gray-600">
+                User registration is managed by system administrators only.
             </p>
 
             {/* Demo admin credentials hint */}

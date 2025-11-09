@@ -8,7 +8,6 @@ import { initializeSystem } from "./utils/ensureAdminUser";
 // Lazy load components
 const LandingPage = lazy(() => import("./pages/LandingPage"));
 const Login = lazy(() => import("./pages/Login"));
-const Register = lazy(() => import("./pages/Register"));
 const DashboardLayout = lazy(() => import("./pages/Dashboard/DashboardLayout"));
 const UnifiedDashboard = lazy(() => import("./pages/Dashboard/UnifiedDashboard"));
 const ExamBank = lazy(() => import("./pages/Dashboard/ExamBank"));
