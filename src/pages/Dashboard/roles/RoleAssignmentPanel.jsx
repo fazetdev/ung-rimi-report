@@ -20,15 +20,20 @@ const RoleAssignmentPanel = ({ user, dashboardData }) => {
   useEffect(() => {
     const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
     
-    // Filter only teacher-role users (those created by admin)
-    const adminCreatedUsers = storedUsers.filter(u => 
-      u.role === 'teacher' && 
-      u.id && 
-      u.id.startsWith('teacher-') && // Only users created through admin panel
-      u.email !== 'admin@school.edu' // Exclude default admin
+    // Show only STAFF users (not students)
+    const staffRoles = [
+      'teacher', 'form master', 'exam officer', 'senior master', 
+      'principal', 'vice principal admin', 'vice principal academic',
+      'vp admin', 'vp_admin' // Include old role formats
+    ];
+    
+    const staffUsers = storedUsers.filter(u => 
+      u.role !== 'admin' && 
+      u.email !== 'admin@school.edu' && // Exclude default admin
+      staffRoles.includes(u.role?.toLowerCase()) // Only staff roles
     );
     
-    setUsers(adminCreatedUsers);
+    setUsers(staffUsers);
   }, []);
 
   const handleRoleAssignment = (e) => {
@@ -59,12 +64,12 @@ const RoleAssignmentPanel = ({ user, dashboardData }) => {
 
   const availableRoles = [
     { value: "teacher", label: "Teacher" },
-    { value: "form_master", label: "Form Master" },
-    { value: "exam_officer", label: "Exam Officer" },
-    { value: "senior_master", label: "Senior Master" },
+    { value: "form master", label: "Form Master" },
+    { value: "exam officer", label: "Exam Officer" },
+    { value: "senior master", label: "Senior Master" },
     { value: "principal", label: "Principal" },
-    { value: "vp_admin", label: "VP Admin" },
-    { value: "vp_academic", label: "VP Academic" }
+    { value: "vice principal admin", label: "Vice Principal Admin" },
+    { value: "vice principal academic", label: "Vice Principal Academic" }
   ];
 
   return (
@@ -74,27 +79,27 @@ const RoleAssignmentPanel = ({ user, dashboardData }) => {
         
         {users.length === 0 ? (
           <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
-            <h3 className="text-lg font-semibold mb-2 text-yellow-800">No Teachers Available</h3>
+            <h3 className="text-lg font-semibold mb-2 text-yellow-800">No Staff Available</h3>
             <p className="text-yellow-700">
-              Create some teachers first in the User Management section, then come back here to assign them roles.
+              Create some staff members first in the User Management section, then come back here to assign them roles.
             </p>
           </div>
         ) : (
           <div className="p-6 bg-blue-50 rounded-lg">
-            <h3 className="text-lg font-semibold mb-4">Assign Role to Teacher</h3>
+            <h3 className="text-lg font-semibold mb-4">Assign Role to Staff Member</h3>
             <form onSubmit={handleRoleAssignment} className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Select Teacher:</label>
+                <label className="block text-sm font-medium mb-2">Select Staff:</label>
                 <select
                   value={selectedUser}
                   onChange={(e) => setSelectedUser(e.target.value)}
                   className="w-full border p-2 rounded"
                   required
                 >
-                  <option value="">Choose a teacher</option>
+                  <option value="">Choose a staff member</option>
                   {users.map(user => (
                     <option key={user.id} value={user.id}>
-                      {user.name} ({user.email})
+                      {user.name} ({user.email}) - Current: {user.role}
                     </option>
                   ))}
                 </select>
@@ -126,7 +131,7 @@ const RoleAssignmentPanel = ({ user, dashboardData }) => {
             </form>
             
             <div className="mt-4 text-sm text-gray-600">
-              <p><strong>Note:</strong> {users.length} teacher(s) available for role assignment.</p>
+              <p><strong>Note:</strong> {users.length} staff member(s) available for role assignment.</p>
             </div>
           </div>
         )}

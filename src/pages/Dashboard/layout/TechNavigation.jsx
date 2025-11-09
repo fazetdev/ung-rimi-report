@@ -10,9 +10,9 @@ const TechNavigation = ({ config, activeModule, onModuleChange }) => {
         {config.modules.map((module) => {
           // Extract module ID from path for admin, or use id for others
           const moduleId = module.id || module.path?.split('/').pop() || module.name?.toLowerCase().replace(/\s+/g, '-');
-          const displayName = module.name || module.label || 'Module';
-          const icon = module.icon || module.name?.split(' ')[0] || '📄';
-          
+          const displayName = module.title || module.name || module.label || 'Module';
+          const icon = module.icon || '📄';
+
           return (
             <button
               key={moduleId}
@@ -24,8 +24,10 @@ const TechNavigation = ({ config, activeModule, onModuleChange }) => {
               }`}
             >
               <span className="text-lg">{icon}</span>
-              <span className="hidden sm:inline">{displayName.replace(/^[^\s]+\s/, '')}</span>
-              <span className="sm:hidden text-xs">{displayName.replace(/^[^\s]+\s/, '').split(' ')[0]}</span>
+              <span className="hidden sm:inline">{displayName}</span>
+              <span className="sm:hidden text-xs">
+                {displayName.split(' ')[0]}
+              </span>
             </button>
           );
         })}

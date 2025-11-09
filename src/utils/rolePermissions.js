@@ -4,23 +4,23 @@ export const rolePermissions = {
     'user_management', 'class_management', 'subject_management', 
     'role_assignment', 'system_settings', 'exambank'
   ],
-  vp_admin: [
-    'form_master_assignment', 'subject_assignments', 'exambank'
+  'vice principal admin': [
+    'form_master_assignment', 'subject_assignments', 'score_entry', 'exambank'
   ],
-  vp_academic: [
-    'academic_oversight', 'curriculum_management', 'exambank'
+  'vice principal academic': [
+    'academic_records', 'score_entry', 'exambank'
   ],
   principal: [
-    'teacher_directory', 'exambank'
+    'teacher_directory', 'class_lists', 'score_entry', 'exambank'
   ],
-  senior_master: [
-    'duty_master', 'score_entry', 'exambank'
+  'senior master': [
+    'duty_roster', 'score_entry', 'exambank'
   ],
-  exam_officer: [
-    'bulk_reports', 'report_cards', 'exambank'
+  'exam officer': [
+    'print_reports', 'score_entry', 'exambank'
   ],
-  form_master: [
-    'student_enrollment', 'exambank'
+  'form master': [
+    'add_students', 'score_entry', 'exambank'
   ],
   teacher: [
     'score_entry', 'exambank'

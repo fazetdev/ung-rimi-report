@@ -3,73 +3,40 @@ import { useAuth } from "../../context/AuthContext";
 import TechHeader from "./layout/TechHeader";
 import TechNavigation from "./layout/TechNavigation";
 import TechContent from "./layout/TechContent";
-import { roleMenus } from "../../data/roleMenus";
-import { getUserMenuItems } from "../../data/functionMenus";
+import { getDashboardConfig } from "../../config/dashboardConfig";
 
 export default function UnifiedDashboard() {
   const { user } = useAuth();
-  const [activeModule, setActiveModule] = useState("user_management"); // Start with first module
+  const [activeModule, setActiveModule] = useState("overview");
   const [dashboardData, setDashboardData] = useState({ users: [] });
 
-  // Helper to extract module ID from path
-  const extractModuleId = (path) => {
-    if (path === '/') return 'overview'; 
-    const segments = path.split('/').filter(Boolean);
-    return segments.pop() || 'overview';
+  // Get config based on user role from dashboardConfig
+  const getDashboardConfigForUser = () => {
+    if (!user?.role) return null;
+    
+    const modules = getDashboardConfig(user.role);
+    
+    return {
+      title: getRoleTitle(user.role),
+      modules: modules
+    };
   };
 
-  // Helper to safely get the icon
-  const extractIcon = (name) => {
-    return name.split(' ')[0] || '⭐';
+  const getRoleTitle = (role) => {
+    const roleTitles = {
+      'admin': 'Admin Dashboard',
+      'vice principal admin': 'Vice Principal Admin Dashboard',
+      'vice principal academic': 'Vice Principal Academic Dashboard', 
+      'principal': 'Principal Dashboard',
+      'senior master': 'Senior Master Dashboard',
+      'exam officer': 'Exam Officer Dashboard',
+      'form master': 'Form Master Dashboard',
+      'teacher': 'Teacher Dashboard'
+    };
+    return roleTitles[role] || `${role} Dashboard`;
   };
 
-  // Get config based on user role
-  const getDashboardConfig = () => {
-    if (user?.role === 'admin') {
-      const adminModules = (roleMenus.admin || []).map(menuItem => {
-        // Use consistent IDs that match the function names
-        const moduleId = menuItem.path.includes('user_management') ? 'user_management' :
-                        menuItem.path.includes('class_management') ? 'class_management' :
-                        menuItem.path.includes('subject_management') ? 'subject_management' :
-                        menuItem.path.includes('role_assignment') ? 'role_assignment' : 'overview';
-        
-        return {
-          id: moduleId,
-          name: menuItem.name,
-          path: menuItem.path,
-          icon: extractIcon(menuItem.name)
-        };
-      });
-
-      return {
-        title: "Admin Dashboard",
-        modules: adminModules
-      };
-    } else {
-      // All other users use function-based menus
-      const userFunctions = user?.functions || [];
-      const menuItemsByCategory = getUserMenuItems(userFunctions);
-
-      const allMenuItems = [];
-      Object.values(menuItemsByCategory).forEach(categoryItems => {
-        categoryItems.forEach(item => {
-          allMenuItems.push({
-            id: extractModuleId(item.path),
-            name: item.name,
-            path: item.path,
-            icon: extractIcon(item.name)
-          });
-        });
-      });
-
-      return {
-        title: `${user?.role} Dashboard`,
-        modules: allMenuItems
-      };
-    }
-  };
-
-  const roleConfig = getDashboardConfig();
+  const roleConfig = getDashboardConfigForUser();
 
   useEffect(() => {
     if (user) {
