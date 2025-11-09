@@ -7,8 +7,25 @@ const LandingPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-950 text-white">
       
-      {/* Header */}
-      <Header />
+      {/* Simple Header */}
+      <header className="bg-gray-900/50 backdrop-blur-sm border-b border-cyan-800/30 py-4 px-6">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center">
+              <span className="text-xl font-bold">🎓</span>
+            </div>
+            <span className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+              SchoolManager Pro
+            </span>
+          </div>
+          <button
+            onClick={() => navigate("/login")}
+            className="bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white py-2 px-6 rounded-xl font-semibold text-sm transition-all duration-300"
+          >
+            Staff Login
+          </button>
+        </div>
+      </header>
 
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center px-4 md:px-6 lg:px-20 py-10 md:py-16">
@@ -36,13 +53,13 @@ const LandingPage = () => {
             >
               🚀 Launch Dashboard
             </button>
+          </div>
 
-            <button
-              onClick={() => navigate("/register")}
-              className="group w-full sm:w-auto border-2 border-cyan-400 text-cyan-300 hover:bg-cyan-400 hover:text-gray-900 py-4 px-8 rounded-2xl font-semibold text-lg transition-all duration-300 transform hover:-translate-y-1 backdrop-blur-sm bg-gray-900/30"
-            >
-              Create Your Account
-            </button>
+          {/* Admin Notice */}
+          <div className="mt-8 p-4 bg-gray-800/50 rounded-xl border border-cyan-800/30">
+            <p className="text-cyan-300 text-sm">
+              💡 <strong>Admin Access Required:</strong> User registration is managed by system administrators only.
+            </p>
           </div>
 
         </div>
