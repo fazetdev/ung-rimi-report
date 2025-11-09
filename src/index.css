@@ -1,0 +1,375 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes marquee {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-marquee {
+  display: inline-block;
+  animation: marquee 15s linear infinite;
+}
+/* Fix for admin panel contrast issues */
+.admin-panel * {
+  color: inherit !important;
+}
+
+.admin-panel input,
+.admin-panel select,
+.admin-panel textarea {
+  background-color: #1e293b !important; /* slate-800 */
+  border-color: #475569 !important; /* slate-600 */
+  color: #f1f5f9 !important; /* slate-100 */
+}
+
+.admin-panel input::placeholder {
+  color: #94a3b8 !important; /* slate-400 */
+}
+
+/* Ensure tables are readable */
+.admin-panel table {
+  color: #f1f5f9 !important;
+}
+
+.admin-panel table th {
+  background-color: #334155 !important; /* slate-700 */
+  color: #e2e8f0 !important; /* slate-200 */
+}
+
+.admin-panel table td {
+  background-color: #1e293b !important; /* slate-800 */
+  color: #f1f5f9 !important; /* slate-100 */
+}
+/* Mobile Optimization - Safe Global Styles */
+@media (max-width: 768px) {
+  /* Better touch targets */
+  button, 
+  [role="button"],
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Improve text readability */
+  body {
+    font-size: 16px; /* Prevents zoom on iOS */
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%; /* Prevent font scaling */
+  }
+  
+  /* Better table scrolling */
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent horizontal overflow */
+  .container, .dashboard-container {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  /* Better form inputs */
+  input, select, textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+    min-height: 44px;
+  }
+  
+  /* Mobile-specific spacing */
+  .mobile-padding {
+    padding: 1rem !important;
+  }
+  
+  /* Force single column layouts on mobile */
+  .mobile-stack {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Responsive text utility classes */
+.text-responsive {
+  font-size: 0.875rem; /* sm */
+}
+@media (min-width: 640px) {
+  .text-responsive {
+    font-size: 1rem; /* base */
+  }
+}
+@media (min-width: 1024px) {
+  .text-responsive {
+    font-size: 1.125rem; /* lg */
+  }
+}
+
+/* Safe mobile padding utilities */
+.mobile-padding {
+  padding: 1rem;
+}
+@media (min-width: 640px) {
+  .mobile-padding {
+    padding: 1.5rem;
+  }
+}
+
+/* Touch-friendly */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile-first container */
+.mobile-container {
+  padding: 1rem;
+}
+@media (min-width: 640px) {
+  .mobile-container {
+    padding: 1.5rem;
+  }
+}
+@media (min-width: 1024px) {
+  .mobile-container {
+    padding: 2rem;
+  }
+}
+
+@media print {
+    @page { margin: 0; size: A4; }
+    body * { visibility: hidden; }
+    .report-sheet-container, .report-sheet-container * { visibility: visible; }
+    .report-sheet-container { position: absolute; left: 0; top: 0; width: 100% !important; }
+    .print\:hidden { display: none !important; }
+}
+/* Fix for navbar z-index issue */
+nav.bg-gray-900 {
+  position: relative;
+  z-index: 1000;
+}
+
+/* Ensure landing page content stays below navbar */
+.landing-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Mobile menu z-index fix */
+.md\\:hidden {
+  position: relative;
+  z-index: 1001;
+}
+
+/* Finance Layout Styles */
+.finance-layout {
+  padding: 20px;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+.finance-header {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.finance-header h1 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 24px;
+}
+
+.finance-header p {
+  margin: 5px 0 0 0;
+  color: #7f8c8d;
+}
+
+.main-tabs {
+  display: flex;
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  gap: 5px;
+}
+
+.main-tab {
+  flex: 1;
+  padding: 15px 10px;
+  border: none;
+  background: #f8f9fa;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.main-tab:hover {
+  background: #e9ecef;
+}
+
+.main-tab.active {
+  background: #3498db;
+  color: white;
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+.tab-icon {
+  font-size: 16px;
+}
+
+.sub-tabs {
+  display: flex;
+  background: white;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  gap: 5px;
+}
+
+.sub-tab {
+  padding: 12px 20px;
+  border: none;
+  background: #f8f9fa;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #555;
+  transition: all 0.3s ease;
+}
+
+.sub-tab:hover {
+  background: #e9ecef;
+}
+
+.sub-tab.active {
+  background: #27ae60;
+  color: white;
+  box-shadow: 0 2px 6px rgba(39, 174, 96, 0.3);
+}
+
+.finance-content {
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  min-height: 500px;
+}
+
+/* Mobile Responsive Styles for Finance Layout */
+@media (max-width: 768px) {
+  .finance-layout {
+    padding: 10px;
+  }
+
+  .finance-header {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+
+  .finance-header h1 {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .finance-header p {
+    text-align: center;
+    font-size: 14px;
+  }
+
+  .main-tabs {
+    flex-direction: column;
+    gap: 8px;
+    padding: 15px;
+  }
+
+  .main-tab {
+    padding: 12px 15px;
+    font-size: 16px; /* Larger touch targets */
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .tab-icon {
+    font-size: 18px;
+    min-width: 24px; /* Consistent icon spacing */
+  }
+
+  .sub-tabs {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .sub-tab {
+    flex: 1;
+    min-width: calc(50% - 8px); /* 2 columns on mobile */
+    padding: 10px 12px;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .finance-content {
+    padding: 15px;
+    margin: 0 -10px; /* Full width on mobile */
+    border-radius: 0;
+    min-height: 400px;
+    box-shadow: none;
+    border-top: 1px solid #e9ecef;
+  }
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+  .finance-header h1 {
+    font-size: 18px;
+  }
+
+  .main-tab {
+    padding: 15px 12px;
+    font-size: 15px;
+  }
+
+  .sub-tab {
+    min-width: 100%; /* Stack vertically on very small screens */
+    margin-bottom: 5px;
+  }
+
+  .sub-tab:last-child {
+    margin-bottom: 0;
+  }
+
+  .finance-content {
+    padding: 12px;
+    min-height: 350px;
+  }
+}
+
+/* Tablet adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .finance-layout {
+    padding: 15px;
+  }
+
+  .main-tab {
+    padding: 12px 8px;
+    font-size: 13px;
+  }
+
+  .sub-tab {
+    padding: 10px 15px;
+    font-size: 13px;
+  }
+}
