@@ -1,151 +1,138 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../../context/AuthContext';
-import { rolePermissions } from '../../../utils/rolePermissions';
-import { loadRoleTemplates } from '../../../data/functionDefinitions';
+import React, { useState, useEffect } from "react";
 
-export default function RoleAssignmentPanel() {
-  const { user } = useAuth();
+const RoleAssignmentPanel = ({ user, dashboardData }) => {
   const [users, setUsers] = useState([]);
-  const [filter, setFilter] = useState('all');
+  const [selectedUser, setSelectedUser] = useState("");
+  const [selectedRole, setSelectedRole] = useState("teacher");
 
-  useEffect(() => {
-    loadUsers();
-  }, []);
-
-  const loadUsers = () => {
-    const allUsers = JSON.parse(localStorage.getItem('users')) || [];
-    setUsers(allUsers);
-  };
-
-  // Only Admin and Principal can assign high-level roles
-  const canAssignRoles = ['Admin', 'Principal'].includes(user?.role);
-
-const assignRole = (userId, newRole) => {
-  if (!canAssignRoles) {
-    alert('Only Admin and Principal can assign roles.');
-    return;
-  }
-
-  if (!rolePermissions.canAssignRole(user.role, newRole)) {
-    alert(`You cannot assign ${newRole} role.`);
-    return;
-  }
-
-  // ✅ FIX: Apply role template functions when role changes
-  const roleTemplates = loadRoleTemplates();
-  const templateFunctions = roleTemplates[newRole] || [];
-
-  const updatedUsers = users.map(u =>
-    u.id === userId ? { 
-      ...u, 
-      role: newRole, 
-      functions: templateFunctions  // ✅ This applies the functions!
-    } : u
-  );
-
-  localStorage.setItem('users', JSON.stringify(updatedUsers));
-  loadUsers();
-  alert(`✅ ${newRole} assigned with ${templateFunctions.length} functions!`);
-};  
-  const getAssignableRoles = () => {
-    return rolePermissions.roleCreation[user.role] || [];
-  };
-
-  const filteredUsers = users.filter(u => {
-    if (filter === 'all') return true;
-    return u.role === filter;
-  });
-
-  if (!canAssignRoles) {
+  // Check if current user is admin
+  if (user?.role !== 'admin') {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-bold text-red-600">Access Denied</h2>
-        <p>Only Admin and Principal can access role assignment.</p>
+      <div className="p-6">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <h2 className="text-xl font-bold mb-2">Access Denied</h2>
+          <p>Only Admin can access role assignment.</p>
+        </div>
       </div>
     );
   }
 
+  useEffect(() => {
+    const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+    
+    // Filter only teacher-role users (those created by admin)
+    const adminCreatedUsers = storedUsers.filter(u => 
+      u.role === 'teacher' && 
+      u.id && 
+      u.id.startsWith('teacher-') && // Only users created through admin panel
+      u.email !== 'admin@school.edu' // Exclude default admin
+    );
+    
+    setUsers(adminCreatedUsers);
+  }, []);
+
+  const handleRoleAssignment = (e) => {
+    e.preventDefault();
+    
+    if (!selectedUser) {
+      alert("Please select a user");
+      return;
+    }
+
+    // Update localStorage
+    const allUsers = JSON.parse(localStorage.getItem("users")) || [];
+    const finalUsers = allUsers.map(u => 
+      u.id === selectedUser ? { ...u, role: selectedRole } : u
+    );
+    
+    localStorage.setItem("users", JSON.stringify(finalUsers));
+    
+    // Update local state and reset form
+    const updatedUsers = users.map(u => 
+      u.id === selectedUser ? { ...u, role: selectedRole } : u
+    );
+    setUsers(updatedUsers);
+    setSelectedUser("");
+    setSelectedRole("teacher");
+    alert(`Role updated to ${selectedRole} successfully!`);
+  };
+
+  const availableRoles = [
+    { value: "teacher", label: "Teacher" },
+    { value: "form_master", label: "Form Master" },
+    { value: "exam_officer", label: "Exam Officer" },
+    { value: "senior_master", label: "Senior Master" },
+    { value: "principal", label: "Principal" },
+    { value: "vp_admin", label: "VP Admin" },
+    { value: "vp_academic", label: "VP Academic" }
+  ];
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="p-6">
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Role Assignment Center</h2>
-        <p className="text-gray-600">
-          Assign and manage staff roles across the school
-        </p>
-      </div>
-
-      {/* Filters */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex gap-4">
-          <div className="flex-1">
-            <label className="block text-sm font-medium mb-2">Filter by Role:</label>
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="w-full p-2 border rounded"
-            >
-              <option value="all">All Roles</option>
-              <option value="Teacher">Teachers</option>
-              <option value="Form Master">Form Masters</option>
-              <option value="Subject Teacher">Subject Teachers</option>
-            </select>
+        <h2 className="text-2xl font-bold mb-6">Role Assignment</h2>
+        
+        {users.length === 0 ? (
+          <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
+            <h3 className="text-lg font-semibold mb-2 text-yellow-800">No Teachers Available</h3>
+            <p className="text-yellow-700">
+              Create some teachers first in the User Management section, then come back here to assign them roles.
+            </p>
           </div>
-        </div>
-      </div>
-
-      {/* Users List */}
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b">
-          <h3 className="text-lg font-semibold">
-            Staff Members ({filteredUsers.length})
-          </h3>
-        </div>
-
-        <div className="divide-y">
-          {filteredUsers.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
-              No users found matching your filters.
-            </div>
-          ) : (
-            filteredUsers.map(staff => (
-              <div key={staff.id} className="p-6 flex justify-between items-center">
-                <div>
-                  <h4 className="font-semibold text-lg">{staff.name}</h4>
-                  <div className="text-sm text-gray-600">
-                    {staff.email} • {staff.phone}
-                  </div>
-                  <div className="text-xs text-gray-500 mt-1">
-                    Current role: <span className="font-medium">{staff.role}</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    staff.role === 'Teacher' ? 'bg-blue-100 text-blue-800' :
-                    staff.role === 'Form Master' ? 'bg-green-100 text-green-800' :
-                    staff.role === 'Subject Teacher' ? 'bg-purple-100 text-purple-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
-                    {staff.role}
-                  </span>
-
-                  <select
-                    value={staff.role}
-                    onChange={(e) => assignRole(staff.id, e.target.value)}
-                    className="p-2 border rounded"
-                  >
-                    <option value={staff.role}>Keep {staff.role}</option>
-                    {getAssignableRoles().map(role => (
-                      <option key={role} value={role}>{role}</option>
-                    ))}
-                  </select>
-                </div>
+        ) : (
+          <div className="p-6 bg-blue-50 rounded-lg">
+            <h3 className="text-lg font-semibold mb-4">Assign Role to Teacher</h3>
+            <form onSubmit={handleRoleAssignment} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Select Teacher:</label>
+                <select
+                  value={selectedUser}
+                  onChange={(e) => setSelectedUser(e.target.value)}
+                  className="w-full border p-2 rounded"
+                  required
+                >
+                  <option value="">Choose a teacher</option>
+                  {users.map(user => (
+                    <option key={user.id} value={user.id}>
+                      {user.name} ({user.email})
+                    </option>
+                  ))}
+                </select>
               </div>
-            ))
-          )}
-        </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">Assign Role:</label>
+                <select
+                  value={selectedRole}
+                  onChange={(e) => setSelectedRole(e.target.value)}
+                  className="w-full border p-2 rounded"
+                >
+                  {availableRoles.map(role => (
+                    <option key={role.value} value={role.value}>
+                      {role.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="flex items-end">
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                >
+                  Assign Role
+                </button>
+              </div>
+            </form>
+            
+            <div className="mt-4 text-sm text-gray-600">
+              <p><strong>Note:</strong> {users.length} teacher(s) available for role assignment.</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
-}
+};
+
+export default RoleAssignmentPanel;

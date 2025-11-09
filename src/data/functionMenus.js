@@ -61,3 +61,47 @@ export const functionMenus = {
     component: 'ExamBank'
   }
 };
+
+// Add the missing getUserMenuItems function
+export const getUserMenuItems = (userFunctions = []) => {
+  const menuItemsByCategory = {
+    academic: [],
+    management: [],
+    reports: [],
+    system: []
+  };
+
+  userFunctions.forEach(func => {
+    const menuItem = functionMenus[func];
+    if (menuItem) {
+      // Categorize based on function type
+      if (func.includes('score') || func.includes('exam')) {
+        menuItemsByCategory.academic.push({
+          name: menuItem.title,
+          path: `/dashboard?view=${func}`,
+          description: menuItem.description
+        });
+      } else if (func.includes('report') || func.includes('bulk')) {
+        menuItemsByCategory.reports.push({
+          name: menuItem.title,
+          path: `/dashboard?view=${func}`,
+          description: menuItem.description
+        });
+      } else if (func.includes('management') || func.includes('assignment')) {
+        menuItemsByCategory.management.push({
+          name: menuItem.title,
+          path: `/dashboard?view=${func}`,
+          description: menuItem.description
+        });
+      } else {
+        menuItemsByCategory.system.push({
+          name: menuItem.title,
+          path: `/dashboard?view=${func}`,
+          description: menuItem.description
+        });
+      }
+    }
+  });
+
+  return menuItemsByCategory;
+};

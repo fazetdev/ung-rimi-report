@@ -7,6 +7,9 @@ export const rolePermissions = {
   vp_admin: [
     'form_master_assignment', 'subject_assignments', 'exambank'
   ],
+  vp_academic: [
+    'academic_oversight', 'curriculum_management', 'exambank'
+  ],
   principal: [
     'teacher_directory', 'exambank'
   ],

@@ -5,39 +5,41 @@ import TechNavigation from "./layout/TechNavigation";
 import TechContent from "./layout/TechContent";
 import { roleMenus } from "../../data/roleMenus";
 import { getUserMenuItems } from "../../data/functionMenus";
-import DutyDisplay from "./roles/DutyDisplay";
-                                             
+
 export default function UnifiedDashboard() {
   const { user } = useAuth();
-  const [activeModule, setActiveModule] = useState("overview");
+  const [activeModule, setActiveModule] = useState("user_management"); // Start with first module
   const [dashboardData, setDashboardData] = useState({ users: [] });
 
-  // Helper to extract the last path segment (which should be the component ID)
-  // Handles paths like '/dashboard/users' -> 'users'
+  // Helper to extract module ID from path
   const extractModuleId = (path) => {
-    // Ensure the path is not just a single '/'
     if (path === '/') return 'overview'; 
-    const segments = path.split('/').filter(Boolean); // Filter(Boolean) removes empty strings
+    const segments = path.split('/').filter(Boolean);
     return segments.pop() || 'overview';
   };
 
-  // Helper to safely get the icon (assumes the name starts with the icon/emoji)
+  // Helper to safely get the icon
   const extractIcon = (name) => {
-    return name.split(' ')[0] || '⭐'; // Default to a star if no icon is found
+    return name.split(' ')[0] || '⭐';
   };
-  
-  // Get config based on user role - Admin uses roleMenus, others use function-based
+
+  // Get config based on user role
   const getDashboardConfig = () => {
-    if (user?.role === 'Admin' || user?.role === 'admin') {
-      // Admin uses the 4-button menu from roleMenus
-      const adminModules = (roleMenus.Admin || []).map(menuItem => ({
-        // IMPROVED: Use helper for robust ID extraction
-        id: extractModuleId(menuItem.path), 
-        name: menuItem.name,
-        path: menuItem.path,
-        // IMPROVED: Use helper for robust icon extraction
-        icon: extractIcon(menuItem.name)
-      }));
+    if (user?.role === 'admin') {
+      const adminModules = (roleMenus.admin || []).map(menuItem => {
+        // Use consistent IDs that match the function names
+        const moduleId = menuItem.path.includes('user_management') ? 'user_management' :
+                        menuItem.path.includes('class_management') ? 'class_management' :
+                        menuItem.path.includes('subject_management') ? 'subject_management' :
+                        menuItem.path.includes('role_assignment') ? 'role_assignment' : 'overview';
+        
+        return {
+          id: moduleId,
+          name: menuItem.name,
+          path: menuItem.path,
+          icon: extractIcon(menuItem.name)
+        };
+      });
 
       return {
         title: "Admin Dashboard",
@@ -48,16 +50,13 @@ export default function UnifiedDashboard() {
       const userFunctions = user?.functions || [];
       const menuItemsByCategory = getUserMenuItems(userFunctions);
 
-      // Flatten all menu items for navigation
       const allMenuItems = [];
       Object.values(menuItemsByCategory).forEach(categoryItems => {
         categoryItems.forEach(item => {
           allMenuItems.push({
-            // IMPROVED: Use helper for robust ID extraction
             id: extractModuleId(item.path),
             name: item.name,
             path: item.path,
-            // IMPROVED: Use helper for robust icon extraction
             icon: extractIcon(item.name)
           });
         });
@@ -91,7 +90,6 @@ export default function UnifiedDashboard() {
   return (
     <div className="min-h-full">
       <TechHeader config={roleConfig} user={user} />
-      <DutyDisplay />
       <div className="container mx-auto px-4 py-6">
         <TechNavigation
           config={roleConfig}

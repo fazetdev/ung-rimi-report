@@ -1,11 +1,10 @@
-// src/data/roleMenus.js - ONLY for admin navigation
-// All other users will get menus from their assigned functions
+// Simplified Admin-only menus
 export const roleMenus = {
-  'Admin': [
-    { name: "👥 User Management", path: "/dashboard/admin/users" },
-    { name: "🎯 Role Templates", path: "/dashboard/admin/templates" },
-    { name: "💰 Finance Control", path: "/dashboard/admin/finance" },
-    { name: "⚙️ System Settings", path: "/dashboard/admin/settings" }
+  'admin': [
+    { name: "👥 User Management", path: "/dashboard/admin?view=user_management" },
+    { name: "🏫 Class Setup", path: "/dashboard/admin?view=class_management" },
+    { name: "📚 Subject Setup", path: "/dashboard/admin?view=subject_management" },
+    { name: "🎯 Role Assignment", path: "/dashboard/admin?view=role_assignment" }
   ]
-  // No other roles here - they use function-based menus
+  // No other roles - they use function-based access
 };
