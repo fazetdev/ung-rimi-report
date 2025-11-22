@@ -15,20 +15,21 @@ export default function SubjectAssignments() {
   }, []);
 
   const loadData = () => {
-    // Load teachers
+    // Load teachers (all staff except admin)
     const users = JSON.parse(localStorage.getItem('users')) || [];
-    const staff = users.filter(u => 
-      ['Subject Teacher', 'Form Master', 'VP Academic', 'VP Admin'].includes(u.role)
-    );
+    const staff = users.filter(u => u.role && u.role !== 'admin' && u.email !== 'admin@school.edu');
     setTeachers(staff);
 
     // Load subjects
     const schoolSubjects = JSON.parse(localStorage.getItem('schoolSubjects')) || [];
     setSubjects(schoolSubjects);
 
-    // Load classes
-    const classLists = JSON.parse(localStorage.getItem('classLists')) || {};
-    setClasses(Object.keys(classLists));
+    // Load classes from the correct key
+    const schoolClasses = JSON.parse(localStorage.getItem('schoolClasses')) || [];
+    const classNames = Array.isArray(schoolClasses) 
+      ? schoolClasses.map(cls => cls.name || cls.className || "").filter(Boolean)
+      : Object.keys(schoolClasses);
+    setClasses(classNames);
   };
 
   const handleTeacherSelect = (teacherId) => {
@@ -47,10 +48,10 @@ export default function SubjectAssignments() {
     }
 
     const users = JSON.parse(localStorage.getItem('users')) || [];
-    const updatedUsers = users.map(user => 
-      user.id === selectedTeacher 
-        ? { 
-            ...user, 
+    const updatedUsers = users.map(user =>
+      user.id === selectedTeacher
+        ? {
+            ...user,
             assignedSubjects: assignments.subjects,
             assignedClasses: assignments.classes
           }
@@ -82,7 +83,7 @@ export default function SubjectAssignments() {
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-bold mb-6">Teacher Subject & Class Assignments</h2>
+      <h2 className="text-xl font-bold mb-6">Assign Teachers to Subjects & Classes</h2>
 
       {/* Teacher Selection */}
       <div className="mb-6 p-4 bg-blue-50 rounded">
@@ -99,6 +100,13 @@ export default function SubjectAssignments() {
             </option>
           ))}
         </select>
+        {teachers.length === 0 && (
+          <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded">
+            <p className="text-sm text-yellow-800">
+              ⚠️ No teachers available. Admin needs to create staff first.
+            </p>
+          </div>
+        )}
       </div>
 
       {selectedTeacher && (
@@ -119,6 +127,13 @@ export default function SubjectAssignments() {
                 </label>
               ))}
             </div>
+            {subjects.length === 0 && (
+              <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                <p className="text-sm text-yellow-800">
+                  ⚠️ No subjects available. Admin needs to create subjects first.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Class Assignments */}
@@ -137,6 +152,13 @@ export default function SubjectAssignments() {
                 </label>
               ))}
             </div>
+            {classes.length === 0 && (
+              <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded">
+                <p className="text-sm text-yellow-800">
+                  ⚠️ No classes available. Admin needs to create classes first.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Current Assignments Summary */}

@@ -8,32 +8,27 @@ import { getDashboardConfig } from "../../config/dashboardConfig";
 export default function UnifiedDashboard() {
   const { user } = useAuth();
   const [activeModule, setActiveModule] = useState("overview");
-  const [dashboardData, setDashboardData] = useState({ users: [] });
-
-  // Get config based on user role from dashboardConfig
-  const getDashboardConfigForUser = () => {
-    if (!user?.role) return null;
-    
-    const modules = getDashboardConfig(user.role);
-    
-    return {
-      title: getRoleTitle(user.role),
-      modules: modules
-    };
-  };
+  const [dashboardData, setDashboardData] = useState({ users: [], classLists: {} });
 
   const getRoleTitle = (role) => {
     const roleTitles = {
-      'admin': 'Admin Dashboard',
-      'vice principal admin': 'Vice Principal Admin Dashboard',
-      'vice principal academic': 'Vice Principal Academic Dashboard', 
-      'principal': 'Principal Dashboard',
-      'senior master': 'Senior Master Dashboard',
-      'exam officer': 'Exam Officer Dashboard',
-      'form master': 'Form Master Dashboard',
-      'teacher': 'Teacher Dashboard'
+      admin: "Admin Dashboard",
+      "vice principal admin": "VP Admin Dashboard",
+      "vice principal academic": "VP Academic Dashboard",
+      principal: "Principal Dashboard",
+      "senior master": "Senior Master Dashboard",
+      "exam officer": "Exam Officer Dashboard",
+      "form master": "Form Master Dashboard",
+      teacher: "Teacher Dashboard",
     };
     return roleTitles[role] || `${role} Dashboard`;
+  };
+
+  const getDashboardConfigForUser = () => {
+    if (!user?.role) return { title: "Dashboard", modules: [] };
+    const modules = getDashboardConfig(user.role);
+    console.log("Dashboard config for role:", user.role, modules);
+    return { title: getRoleTitle(user.role), modules };
   };
 
   const roleConfig = getDashboardConfigForUser();
@@ -46,13 +41,15 @@ export default function UnifiedDashboard() {
     }
   }, [user]);
 
-  if (!user || !roleConfig) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-800 flex items-center justify-center">
         <div className="text-white text-lg">Loading dashboard...</div>
       </div>
     );
   }
+
+  console.log("Rendering UnifiedDashboard with:", { user, roleConfig });
 
   return (
     <div className="min-h-full">

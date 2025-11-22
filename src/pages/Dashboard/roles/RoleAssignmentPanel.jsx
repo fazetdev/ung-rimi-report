@@ -17,28 +17,32 @@ const RoleAssignmentPanel = ({ user, dashboardData }) => {
     );
   }
 
-  useEffect(() => {
+  const loadStaffUsers = () => {
     const storedUsers = JSON.parse(localStorage.getItem("users")) || [];
-    
+
     // Show only STAFF users (not students)
     const staffRoles = [
-      'teacher', 'form master', 'exam officer', 'senior master', 
+      'teacher', 'form master', 'exam officer', 'senior master',
       'principal', 'vice principal admin', 'vice principal academic',
-      'vp admin', 'vp_admin' // Include old role formats
+      'vp admin', 'vp_admin', 'form_master' // Include all role formats
     ];
-    
-    const staffUsers = storedUsers.filter(u => 
-      u.role !== 'admin' && 
+
+    const staffUsers = storedUsers.filter(u =>
+      u.role !== 'admin' &&
       u.email !== 'admin@school.edu' && // Exclude default admin
       staffRoles.includes(u.role?.toLowerCase()) // Only staff roles
     );
-    
+
     setUsers(staffUsers);
+  };
+
+  useEffect(() => {
+    loadStaffUsers();
   }, []);
 
   const handleRoleAssignment = (e) => {
     e.preventDefault();
-    
+
     if (!selectedUser) {
       alert("Please select a user");
       return;
@@ -46,17 +50,16 @@ const RoleAssignmentPanel = ({ user, dashboardData }) => {
 
     // Update localStorage
     const allUsers = JSON.parse(localStorage.getItem("users")) || [];
-    const finalUsers = allUsers.map(u => 
+    const finalUsers = allUsers.map(u =>
       u.id === selectedUser ? { ...u, role: selectedRole } : u
     );
-    
+
     localStorage.setItem("users", JSON.stringify(finalUsers));
+
+    // Reload the staff list to reflect the changes
+    loadStaffUsers();
     
-    // Update local state and reset form
-    const updatedUsers = users.map(u => 
-      u.id === selectedUser ? { ...u, role: selectedRole } : u
-    );
-    setUsers(updatedUsers);
+    // Reset form
     setSelectedUser("");
     setSelectedRole("teacher");
     alert(`Role updated to ${selectedRole} successfully!`);
@@ -76,7 +79,7 @@ const RoleAssignmentPanel = ({ user, dashboardData }) => {
     <div className="p-6">
       <div className="bg-white rounded-lg shadow p-6">
         <h2 className="text-2xl font-bold mb-6">Role Assignment</h2>
-        
+
         {users.length === 0 ? (
           <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-lg">
             <h3 className="text-lg font-semibold mb-2 text-yellow-800">No Staff Available</h3>
@@ -104,7 +107,7 @@ const RoleAssignmentPanel = ({ user, dashboardData }) => {
                   ))}
                 </select>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium mb-2">Assign Role:</label>
                 <select
@@ -119,7 +122,7 @@ const RoleAssignmentPanel = ({ user, dashboardData }) => {
                   ))}
                 </select>
               </div>
-              
+
               <div className="flex items-end">
                 <button
                   type="submit"
@@ -129,9 +132,10 @@ const RoleAssignmentPanel = ({ user, dashboardData }) => {
                 </button>
               </div>
             </form>
-            
+
             <div className="mt-4 text-sm text-gray-600">
               <p><strong>Note:</strong> {users.length} staff member(s) available for role assignment.</p>
+              <p><em>All staff roles will remain visible in this list after assignment.</em></p>
             </div>
           </div>
         )}

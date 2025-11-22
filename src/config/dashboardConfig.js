@@ -45,5 +45,26 @@ export const dashboardConfig = {
 };
 
 export const getDashboardConfig = (role) => {
-  return dashboardConfig[role] || [];
+  if (!role) return [];
+
+  // Map different role name formats to the correct config key
+  const roleMap = {
+    'vp admin': 'vice principal admin',
+    'vice principal admin': 'vice principal admin',
+    'vice-principal-admin': 'vice principal admin',
+    'vice principal': 'vice principal admin',
+    'vp': 'vice principal admin',
+    'vp_admin': 'vice principal admin',
+    'admin': 'admin',
+    'principal': 'principal',
+    'vice principal academic': 'vice principal academic',
+    'senior master': 'senior master',
+    'exam officer': 'exam officer',
+    'form master': 'form master',
+    'form_master': 'form master', // ADDED: Map underscore version to space version
+    'teacher': 'teacher'
+  };
+
+  const mappedRole = roleMap[role.toLowerCase()] || role;
+  return dashboardConfig[mappedRole] || [];
 };

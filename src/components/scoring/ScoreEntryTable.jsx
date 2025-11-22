@@ -2,9 +2,9 @@ import React from "react";
 import { getStudentIdentifier } from "../../utils/studentUtils";
 
 const ScoreEntryTable = ({
-  students,
+  students = [],
   selectedSubject,
-  examData,
+  examData = {},
   updateScore,
   readOnly = false,
   currentClass = "",
@@ -13,7 +13,7 @@ const ScoreEntryTable = ({
     console.log("🔄 Score change triggered:", { studentIdentifier, scoreType, value });
     console.log("📝 updateScore function:", updateScore);
     console.log("📚 selectedSubject:", selectedSubject);
-    
+
     if (readOnly) {
       console.log("❌ Read-only mode");
       return;
@@ -47,9 +47,21 @@ const ScoreEntryTable = ({
     return Math.min(100, caScore + examScore);
   };
 
-  console.log("🎯 ScoreEntryTable Render - Students:", students.length);
+  console.log("🎯 ScoreEntryTable Render - Students:", students?.length || 0);
   console.log("📖 Selected Subject:", selectedSubject);
   console.log("📊 Exam Data:", examData);
+
+  if (!students || students.length === 0) {
+    return (
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
+        <div className="text-4xl mb-2">📝</div>
+        <h3 className="text-lg font-semibold text-yellow-800 mb-2">No Students Available</h3>
+        <p className="text-yellow-700">
+          There are no students in this class. Please add students first.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-x-auto">

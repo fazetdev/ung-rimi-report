@@ -11,16 +11,19 @@ export default function FormMasterAssignment() {
   }, []);
 
   const loadData = () => {
-    // Load ALL staff (including "Teacher" role)
+    // Load ALL staff (including teachers and other roles)
     const users = JSON.parse(localStorage.getItem('users')) || [];
-    const allStaff = users.filter(u => 
-      ['Teacher', 'Subject Teacher', 'Form Master', 'Senior Master', 'VP Academic', 'VP Admin', 'Exam Officer'].includes(u.role)
+    const allStaff = users.filter(u =>
+      u.role && u.role !== 'admin' && u.email !== 'admin@school.edu'
     );
     setStaff(allStaff);
 
-    // Load classes
-    const classLists = JSON.parse(localStorage.getItem('classLists')) || {};
-    setClasses(Object.keys(classLists));
+    // Load classes from the correct key
+    const schoolClasses = JSON.parse(localStorage.getItem('schoolClasses')) || [];
+    const classNames = Array.isArray(schoolClasses) 
+      ? schoolClasses.map(cls => cls.name || cls.className || "").filter(Boolean)
+      : Object.keys(schoolClasses);
+    setClasses(classNames);
   };
 
   const assignFormMaster = () => {
@@ -49,10 +52,10 @@ export default function FormMasterAssignment() {
 
     const updatedUsers = users.map(user =>
       user.id === selectedStaff
-        ? { 
-            ...user, 
+        ? {
+            ...user,
             assignedClass: assignedClass,
-            role: 'Form Master' // Automatically set role to Form Master when assigned
+            role: user.role === 'teacher' ? 'form master' : user.role // Only upgrade teachers to form master
           }
         : user
     );
@@ -69,13 +72,13 @@ export default function FormMasterAssignment() {
   const removeAssignment = (staffId) => {
     const users = JSON.parse(localStorage.getItem('users')) || [];
     const staffMember = users.find(u => u.id === staffId);
-    
+
     const updatedUsers = users.map(user =>
       user.id === staffId
-        ? { 
-            ...user, 
+        ? {
+            ...user,
             assignedClass: '',
-            role: 'Subject Teacher' // Revert to Subject Teacher when assignment removed
+            role: user.role === 'form master' ? 'teacher' : user.role // Only downgrade form masters to teachers
           }
         : user
     );
@@ -87,11 +90,11 @@ export default function FormMasterAssignment() {
 
   return (
     <div className="bg-white rounded-lg shadow p-4">
-      <h2 className="text-xl font-bold mb-4">Form Master Class Assignment</h2>
+      <h2 className="text-xl font-bold mb-4">Assign Form Masters to Classes</h2>
 
-      {/* Assignment Form - Mobile Friendly */}
+      {/* Assignment Form */}
       <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-        <h3 className="font-semibold mb-3 text-lg">Assign Form Master to Class</h3>
+        <h3 className="font-semibold mb-3 text-lg">Assign Form Master</h3>
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -112,12 +115,12 @@ export default function FormMasterAssignment() {
             {staff.length === 0 && (
               <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <p className="text-sm text-yellow-800">
-                  ⚠️ No staff members available. Please approve staff first in User Management.
+                  ⚠️ No staff members available. Admin needs to create staff first.
                 </p>
               </div>
             )}
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Select Class
@@ -135,30 +138,29 @@ export default function FormMasterAssignment() {
             {classes.length === 0 && (
               <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
                 <p className="text-sm text-yellow-800">
-                  ⚠️ No classes available. Please create classes first in "Manage Classes".
+                  ⚠️ No classes available. Admin needs to create classes first.
                 </p>
               </div>
             )}
           </div>
         </div>
-        
+
         <button
           onClick={assignFormMaster}
           disabled={!selectedStaff || !assignedClass}
           className="w-full mt-4 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-400 text-base font-medium"
         >
-          ✅ Assign as Form Master
+          ✅ Assign Form Master
         </button>
       </div>
 
-      {/* Current Assignments - Mobile Friendly */}
+      {/* Current Assignments */}
       <div>
-        <h3 className="font-semibold mb-3 text-lg">Current Form Master Assignments</h3>
+        <h3 className="font-semibold mb-3 text-lg">Current Form Masters</h3>
         {staff.filter(person => person.assignedClass).length === 0 ? (
           <div className="text-center p-6 bg-gray-50 rounded-lg">
             <div className="text-4xl mb-2">👨‍🏫</div>
             <p className="text-gray-500">No Form Masters assigned to classes yet</p>
-            <p className="text-sm text-gray-400 mt-1">Assign staff members using the form above</p>
           </div>
         ) : (
           <div className="space-y-3">
